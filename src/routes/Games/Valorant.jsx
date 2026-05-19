@@ -1,0 +1,311 @@
+import React, { useContext, useEffect, useState } from 'react'
+import OrderCompleted from '../../components/OrderCompleted'
+import UserContext from '../../context/UserContext'
+import { valorantSchema } from '../../models'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import userdetails from '../../api/userdetails'
+import { Modal } from 'react-bootstrap'
+import { useFormik } from 'formik'
+import Swal from 'sweetalert2'
+
+const initialValues = {
+  code: '',
+  characterId: '',
+  inGameName: '',
+  itemId: '',
+}
+
+const code = 'valorant'
+export default function MobileLegendsRussia() {
+  const [infomodal, setInfomodal] = useState(false)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const context = useContext(UserContext)
+  const { clickLoadingBar } = context
+  const infoData = useSelector((state) => state.infoData)
+  const { payment } = infoData
+  const img = process.env.REACT_APP_API_ROOT_URL + 'static/games/' + code + '.webp'
+  const [product, setProduct] = useState(infoData.availableGames.find((element) => element.code === code))
+
+  const [item, setItem] = useState({})
+  const [directCheckout, setDirectCheckout] = useState(true)
+  const [complated, setComplated] = useState({ is: false, data: {} })
+
+  useEffect(() => {
+    document.title = 'NMH Gaming - Checkout'
+
+    const selectedItem = product?.itemList.find((item) => item.status) || product?.itemList[0]
+    setValues({ ...values, code: product?.code, itemId: selectedItem?.id })
+    setItem(selectedItem)
+    // eslint-disable-next-line
+  }, [])
+
+  const handleItemClick = (value) => {
+    setValues((prevValues) => ({ ...prevValues, itemId: value.id }))
+    setItem(value)
+  }
+
+  const { values, setValues, errors, touched, isSubmitting, handleBlur, handleChange, handleSubmit } = useFormik({
+    initialValues,
+    validationSchema: valorantSchema,
+    onSubmit: async (values) => {
+      try {
+        if (payment.gateway === 'N.A') {
+          Swal.fire({
+            icon: 'error',
+            title: '',
+            text: 'Gateway down, please try again leter!',
+            footer: 'Alert by the Radient Official team',
+            confirmButtonColor: '#4a89dc',
+          })
+        } else {
+          const url = directCheckout ? `${process.env.REACT_APP_API_ROOT_URL}payment/${payment.gateway + payment.url}` : `${process.env.REACT_APP_API_ROOT_URL}purchase`
+          const response = await fetch(url, {
+            method: 'post',
+            headers: {
+              'Content-Type': 'application/json',
+              authToken: localStorage.getItem('authToken'),
+            },
+            body: directCheckout
+              ? JSON.stringify({ amount: item.amount, directCheckout, purchasePayload: { ...values, paymentMethod: 'upi' } })
+              : JSON.stringify({ ...values, paymentMethod: 'wallet', orderId: Math.floor(Math.random() * 90000000000) + 10000000000 }),
+          })
+          const result = await response.json()
+          if (result.success) {
+            if (directCheckout) window.location.replace(result.data.paymentLink)
+            else {
+              dispatch(userdetails(navigate))
+              setComplated({ is: true, data: result.data })
+              clickLoadingBar()
+              // Swal.fire({
+              //   icon: 'success',
+              //   title: '',
+              //   text: result.msg,
+              //   footer: 'Alert by the NMH Gaming team',
+              //   confirmButtonColor: '#008ad8',
+              // })
+              // navigate(`/invoice?type=purchase&orderId=${result.data.orderId}`)
+            }
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: '',
+              text: result.msg,
+              footer: 'Alert by the Radient Official team',
+              confirmButtonColor: '#1c26b9',
+            })
+          }
+        }
+      } catch (error) {
+        console.log(error)
+        Swal.fire({
+          icon: 'error',
+          title: '',
+          text: 'Something went wrong, please try again leter!',
+          footer: 'Alert by the Radient Official team',
+          confirmButtonColor: '#1c26b9',
+        })
+      }
+    },
+  })
+
+  return (
+    <>
+      {complated.is ? (
+        <OrderCompleted data={complated.data} setComplated={setComplated} />
+      ) : (
+        <section className='wrapper product'>
+          <div className='container'>
+            <div className='row pt-32px g-md-5 g-3'>
+              <div className='col-lg col-lg-340 p-0'>
+                <div className='game-imgbox'>
+                  <img src={'images/banner/' + code + '.png'} alt='legends' />
+                </div>
+
+                <div className='game-content'>
+                  <div className='pt-3 d-flex'>
+                    <div className='game-smimgbox me-3'>
+                      <img src={img} alt='legends' className='game-smimg' />
+                    </div>
+                    <div>
+                      <h6 className='game-heading'>{product?.name}</h6>
+
+                      <div className='d-flex align-items-center pt-2'>
+                        {/* <svg className='icon me-2'>
+                          <use href='#icon_energy'></use>
+                        </svg>
+                        <span>Instant Delivery</span> */}
+                        <svg className='icon ms-3l me-2'>
+                          <use href='#icon_secure'></use>
+                        </svg>
+                        <span>Secure Payments</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className='col-lg content-wrapper'>
+                <div className='d-flex align-items-center pb-md-3 pb-2'>
+                  <h5 className='details-heading'>1. Enter Account Details</h5>
+                </div>
+
+                <div className='row row-cols-1 row-cols-md-2 g-md-3 g-2'>
+                  <div className='col'>
+                    <label htmlFor='UserId' className='form-label input-label pb-md-1 mb-md-1 p-0 m-0'>
+                      Email
+                    </label>
+                    <input
+                      type='email'
+                      autoComplete='off'
+                      name='characterId'
+                      placeholder='Enter Email'
+                      value={values.characterId}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      id='UserId'
+                      className={`form-control form-control-lg input-box ${!!errors.characterId && touched.characterId && 'is-invalid'}`}
+                    />
+                    {errors.characterId && touched.characterId && <div className='invalid-feedback'>{errors.characterId}</div>}
+                  </div>
+                </div>
+
+                <h5 className='details-heading mt-2'>2. Select a Package</h5>
+
+                <div className='row row-cols-2 row-cols-md-3 g-md-3 g-2 pt-md-4 pt-2 pb-4'>
+                  {product?.itemList
+                    ?.sort((a, b) => a.bottomArrangement - b.bottomArrangement || (b.badge ? 1 : 0) - (a.badge ? 1 : 0) || a.amount - b.amount)
+                    .map(
+                      ({ id, logo, amount, dosOffer, title, description, badge, status }, index) =>
+                        status && (
+                          <div className='col' key={index}>
+                            <label className='card-label' onClick={() => handleItemClick({ id, logo, amount, dosOffer, title, description, badge, status })}>
+                              <input type='checkbox' checked={values.itemId === id} />
+                              <div className='cl-content min-h132px'>
+                                {badge && (
+                                  <div className='cl-badge'>
+                                    <small>{badge}</small>
+                                  </div>
+                                )}
+                                <div className='cl-title'>
+                                  <h4>{title}</h4>
+                                  <span>{description}</span>
+                                </div>
+                                <div className='cl-icon'>
+                                  <img src={`${process.env.REACT_APP_API_ROOT_URL}static/uploads/${logo}`} alt='diamond' />
+                                </div>
+                                <h6 className='cl-price'>₹{amount}</h6>
+                              </div>
+                            </label>
+                          </div>
+                        )
+                    )}
+                </div>
+
+                <h5 className='details-heading mt-md-3 pb-md-4 pb-2'>3. Choose Payment Method</h5>
+
+                <div className='row pb-md-4 pb-2 g-md-4 g-md-3 g-2'>
+                  {/* <div className='col-12'>
+                    <label className='card-label'>
+                      <input type='checkbox' checked={directCheckout === false} onChange={() => setDirectCheckout(false)} />
+                      <div className='cl-content payment-card'>
+                        <div className='cr-badge'>
+                          <small>Get 5-10% Discount</small>
+                        </div>
+                        <div className='w-100 d-flex  align-items-center'>
+                          <div className='left-coin'>
+                            <div className='img-box'>
+                              <img src='/images/dos.svg' alt='coin' />
+                            </div>
+                            <h3 className='coin-name'>NMH Coins</h3>
+                          </div>
+                          <div className='right-coin ms-auto me-1'>
+                            <div className='d-flex align-items-center'>
+                              <div className='img-box'>
+                                <img src='/images/dos.svg' alt='coin' />
+                              </div>
+                              <div>
+                                <h3 className='coin-value'>{(item.amount - item.dosOffer).toFixed(2)}</h3>
+                              </div>
+                            </div>
+                            <div className='d-flex'>
+                              <p className='rupee ms-auto'>(=₹{(item.amount - item.dosOffer).toFixed(2)})</p>
+                            </div>
+                            <div className='d-flex'>
+                              <del className='old-price ms-auto'>₹{item.amount}</del>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </label>
+                  </div> */}
+
+                  <div className='col-12 mb-md-0 mb-3'>
+                    <label className='card-label'>
+                      <input type='checkbox' checked={directCheckout === true} onChange={() => setDirectCheckout(true)} />
+                      <div className='cl-content payment-card'>
+                        <div className='w-100 d-flex  align-items-center'>
+                          <div className='left-upi'>
+                            <div className='img-box'>
+                              <img src='/images/upi.svg' alt='upi' />
+                            </div>
+                            <h3 className='coin-name'>UPI</h3>
+                          </div>
+                          <div className='right-coin ms-auto me-1'>
+                            <div className='d-flex align-items-center'>
+                              <div className='img-upibox'>
+                                <img src='/images/gpay.svg' alt='gpay' />
+                              </div>
+                              <div className='img-upibox'>
+                                <img src='/images/phonepe.svg' alt='phonepe' />
+                              </div>
+                              <div className='img-upibox'>
+                                <img src='/images/paytm.svg' alt='paytm' />
+                              </div>
+                              <div className='img-upimore'>
+                                <img src='/images/plus.svg' alt='more' />
+                              </div>
+                              <div>
+                                <h3 className='coin-value'>₹{item.amount}</h3>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+
+                  {values.characterId && values.itemId && (
+                    <div className='col-12 pay-btnbox mb-md-4'>
+                      <button type='button' className='btn btn-pay w-100' disabled={!values.characterId || !values.itemId || isSubmitting} onClick={() => (localStorage.getItem('authToken') ? handleSubmit() : navigate('/send-otp'))}>
+                        {isSubmitting ? (
+                          <>
+                            <span className='spinner-border spinner-border-sm me-05' role='status' aria-hidden='true' />
+                            &nbsp; Loading...
+                          </>
+                        ) : (
+                          ` Proceed to pay ₹${!directCheckout && item.dosOffer > 0 ? (item.amount - item.dosOffer).toFixed(2) : item.amount}`
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <Modal centered show={infomodal} onHide={() => setInfomodal(false)} className='detail-modal'>
+        <Modal.Header closeButton className='border-0'></Modal.Header>
+        <Modal.Body className='p-md-4 p-3 pt-0'>
+          <div className='d-flex'></div>
+          <p>To find your User ID, click on the profile menu in the top left corner of the game's main menu. The ID will be listed as, for example, 123456789(12345). Enter 123456789 in the User ID field and 12345 in the Zone ID field.</p>
+          <div className='img-details mt-md-4 mt-2'>
+            <img src={'images/info/' + code + '.webp'} alt='/profile details' />
+          </div>
+        </Modal.Body>
+      </Modal>
+    </>
+  )
+}

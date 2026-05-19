@@ -1,0 +1,251 @@
+import React, { useContext } from 'react'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { Offcanvas } from 'react-bootstrap'
+import Addmoney from './AddMoney'
+import UserContext from '../context/UserContext'
+import { useSelector } from 'react-redux'
+
+export default function Header() {
+  const profileData = useSelector((state) => state.profileData)
+  const navigate = useNavigate()
+  const pathname = useLocation().pathname
+  const context = useContext(UserContext)
+  const { modal, setModal } = context
+  const navItems = [
+    { label: 'Home', to: '/' },
+    { label: 'Orders', to: '/reports?type=purchase' },
+    { label: 'My Wallet', to: '/my-wallet' },
+    { label: 'Profile', to: '/profile' },
+    { label: 'About Us', to: '/about-us' },
+    { label: 'Reseller', to: pathname, neutral: true },
+  ]
+
+  const signoutHandler = () => {
+    setModal({ ...modal, sideNav: false })
+    localStorage.removeItem('authToken')
+    navigate('/send-otp')
+  }
+
+  const openGamesSearch = () => {
+    if (pathname === '/') {
+      window.dispatchEvent(new CustomEvent('dos:focus-games-search'))
+      return
+    }
+    navigate('/?focusGamesSearch=1')
+  }
+
+  return (
+    <>
+      <Addmoney modal={modal} setModal={setModal} />
+
+      <header className='site-header sticky-top'>
+        <nav className='site-navbar py-3'>
+          <div className='container d-flex align-items-center justify-content-between gap-3'>
+
+            {/* LEFT SIDE: Hamburger / Back & Logo */}
+            <div className='d-flex align-items-center header-brand-group'>
+              {pathname === '/' ? (
+                <button className='navbar-toggler comet-menu-btn me-1' type='button' onClick={() => setModal({ ...modal, sideNav: true })} aria-label='Open navigation'>
+                  <span className='comet-menu-icon' aria-hidden='true'>
+                    <span></span>
+                  </span>
+                </button>
+              ) : (
+                <button type='button' onClick={() => navigate(-1)} className='navbar-toggler header-back-btn me-3' aria-label='Go back'>
+                  <svg className='icon'>
+                    <use href='#icon_backarrow'></use>
+                  </svg>
+                </button>
+              )}
+
+              <Link to='/' className='navbar-brand me-0 d-flex align-items-center'>
+                <img src='/images/logo.png' alt='Logo' style={{ height: '36px', objectFit: 'contain' }} />
+              </Link>
+            </div>
+
+            {/* MIDDLE: Search Box (Desktop Only) */}
+            <div className='d-none d-md-flex mx-auto position-relative flex-grow-1 header-search-wrap'>
+              <button type='button' className='header-search-btn' onClick={openGamesSearch}>
+                <svg className='icon'>
+                  <use href='#icon_search'></use>
+                </svg>
+                <span>Search games, vouchers, diamonds...</span>
+              </button>
+            </div>
+
+            {/* RIGHT SIDE: Wallet, Profile, Country */}
+            <div className='d-flex align-items-center ms-auto header-actions'>
+              {localStorage.getItem('authToken') ? (
+                <>
+                  <button type='button' className='btn-coin header-wallet-btn' onClick={() => setModal({ ...modal, addMoney: true })}>
+                    <img src='/images/coin.svg' alt='coin' style={{ height: '22px' }} />
+                    <span className='fw mx-2 fs-6'>{Number(profileData.walletBalance ?? profileData.wallet ?? 0).toFixed(2)}</span>
+                    <img src='/images/rounded-plus.svg' alt='plus' style={{ height: '22px' }} />
+                  </button>
+
+                  <button
+                    type='button'
+                    onClick={() => navigate('/profile')}
+                    className='btn header-profile-btn rounded-circle ms-2 ms-md-3 d-flex align-items-center justify-content-center p-0 overflow-hidden'
+                    title={profileData?.name || 'Profile'}
+                  >
+                    <img src={profileData?.profilePicture || '/images/user.svg'} alt='user' style={{ width: profileData?.profilePicture ? '40px' : '20px', height: profileData?.profilePicture ? '40px' : '20px', objectFit: 'cover' }} />
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to='/send-otp'
+                  className='btn btn-login rounded-pill fw-500 d-inline-flex align-items-center justify-content-center text-center text-decoration-none'
+                >
+                  Login
+                </Link>
+              )}
+
+              <div className='country-box ms-md-4 ms-2 d-none d-lg-block'>
+                <button type='button' className='country-btn d-flex align-items-center' data-bs-toggle='collapse' data-bs-target='#collapseCountryList'>
+                  <img src='/images/india-flag.svg' alt='flag' />
+                  <span className='mx-1 fw-500'>IN</span>
+                  <svg className='icon'>
+                    <use href='#icon_chevrondown'></use>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        {/* Desktop Navbar Links */}
+        <div className='d-none d-lg-block header-linkbar'>
+          <div className='container py-2'>
+            <div className='navbar-nav flex-row d-flex justify-content-center w-100 fs-16px fw-500'>
+              {navItems.map((item) => (
+                item.neutral ? (
+                  <Link key={`${item.label}-${item.to}`} className='nav-link header-nav-link px-3' to={item.to}>
+                    {item.label}
+                  </Link>
+                ) : (
+                  <NavLink key={`${item.label}-${item.to}`} className='nav-link header-nav-link px-3' to={item.to}>
+                    {item.label}
+                  </NavLink>
+                )
+              ))}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <Offcanvas show={modal.sideNav} onHide={() => setModal({ ...modal, sideNav: false })} className='offcanvas offcanvas-start site-offcanvas' tabIndex='-1' id='offcanvasExample' aria-labelledby='offcanvasExampleLabel'>
+        <div className='offcanvas-header'>
+          <div className='offcanvas-logo'>
+            <Link to='/' className='w-100'>
+              <img src='/images/logo.png' alt='NMH Gaming' />
+            </Link>
+          </div>
+          <button type='button' className='btn-close' data-bs-dismiss='offcanvas' aria-label='Close' onClick={() => setModal({ ...modal, sideNav: false })}></button>
+        </div>
+        <div className='offcanvas-body position-relative'>
+          <ul className='offcanvas-aside'>
+            <li>
+              <NavLink className='nav-link' to='/profile' onClick={() => setModal({ ...modal, sideNav: false })}>
+                <span>
+                  <svg className='icon'>
+                    <use href='#icon_profile'></use>
+                  </svg>
+                </span>
+                <strong>Profile</strong>
+                <svg className='icon ms-auto'>
+                  <use href='#icon_rightarrow'></use>
+                </svg>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink className='nav-link' to='/reports?type=purchase' onClick={() => setModal({ ...modal, sideNav: false })}>
+                <span>
+                  <svg className='icon'>
+                    <use href='#icon_order'></use>
+                  </svg>
+                </span>
+                <strong>Orders</strong>
+                <svg className='icon ms-auto'>
+                  <use href='#icon_rightarrow'></use>
+                </svg>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink className='nav-link' to='/my-wallet' onClick={() => setModal({ ...modal, sideNav: false })}>
+                <span>
+                  <svg className='icon'>
+                    <use href='#icon_wallet'></use>
+                  </svg>
+                </span>
+                <strong>My Wallet</strong>
+                <svg className='icon ms-auto'>
+                  <use href='#icon_rightarrow'></use>
+                </svg>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink className='nav-link' to='/support' onClick={() => setModal({ ...modal, sideNav: false })}>
+                <span>
+                  <svg className='icon'>
+                    <use href='#icon_chat'></use>
+                  </svg>
+                </span>
+                <strong>Help & Support</strong>
+                <svg className='icon ms-auto'>
+                  <use href='#icon_rightarrow'></use>
+                </svg>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink className='nav-link' to='/' onClick={() => setModal({ ...modal, sideNav: false })}>
+                <span>
+                  <svg className='icon'>
+                    <use href='#icon_handshake'></use>
+                  </svg>
+                </span>
+                <strong>Reseller</strong>
+                <svg className='icon ms-auto'>
+                  <use href='#icon_rightarrow'></use>
+                </svg>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink className='nav-link' to='/about-us' onClick={() => setModal({ ...modal, sideNav: false })}>
+                <span>
+                  <svg className='icon'>
+                    <use href='#icon_info'></use>
+                  </svg>
+                </span>
+                <strong>About Us</strong>
+                <svg className='icon ms-auto'>
+                  <use href='#icon_rightarrow'></use>
+                </svg>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink className='nav-link' to='/' onClick={() => setModal({ ...modal, sideNav: false })}>
+                <span>
+                  <svg className='icon'>
+                    <use href='#icon_share'></use>
+                  </svg>
+                </span>
+                <strong>Share</strong>
+                <svg className='icon ms-auto'>
+                  <use href='#icon_rightarrow'></use>
+                </svg>
+              </NavLink>
+            </li>
+          </ul>
+          <button type='button' className='btn rounded-pill' onClick={signoutHandler}>
+            <svg className='icon me-1'>
+              <use href='#icon_logout'></use>
+            </svg>
+            Log out
+          </button>
+        </div>
+      </Offcanvas>
+
+    </>
+  )
+}
