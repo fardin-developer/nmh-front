@@ -2098,6 +2098,7 @@ footer .collapse:not(.show) {
 
 .terms-content {
   font-family: 'Open Sans', sans-serif;
+  color: #fff;
 }
 
 .terms-content .TermsConditions-Heading {
@@ -2113,7 +2114,7 @@ footer .collapse:not(.show) {
 
 .terms-content .terms-paragraph .link {
   text-decoration: none;
-  color: #212530;
+  color: #1a87d9;
 }
 
 .terms-content .Chapter-Heading {

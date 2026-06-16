@@ -10,7 +10,7 @@ export default function Header() {
   const navigate = useNavigate()
   const pathname = useLocation().pathname
   const context = useContext(UserContext)
-  const { modal, setModal } = context
+  const { modal, setModal, websiteLogo } = context
   const navItems = [
     { label: 'Home', to: '/' },
     { label: 'Orders', to: '/reports?type=purchase' },
@@ -59,7 +59,7 @@ export default function Header() {
               )}
 
               <Link to='/' className='navbar-brand me-0 d-flex align-items-center'>
-                <img src='/images/logo.png' alt='Logo' style={{ height: '36px', objectFit: 'contain' }} />
+                <img src={websiteLogo} alt='Logo' style={{ height: '36px', objectFit: 'contain' }} />
               </Link>
             </div>
 
@@ -137,7 +137,7 @@ export default function Header() {
         <div className='offcanvas-header'>
           <div className='offcanvas-logo'>
             <Link to='/' className='w-100'>
-              <img src='/images/logo.png' alt='NMH Gaming' />
+              <img src={websiteLogo} alt='NMH Gaming' />
             </Link>
           </div>
           <button type='button' className='btn-close' data-bs-dismiss='offcanvas' aria-label='Close' onClick={() => setModal({ ...modal, sideNav: false })}></button>

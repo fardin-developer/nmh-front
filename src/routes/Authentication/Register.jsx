@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import 'react-phone-number-input/style.css'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
@@ -7,6 +7,7 @@ import { useFormik } from 'formik'
 import Swal from 'sweetalert2'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { completeRegistration } from '../../api/apiService'
+import UserContext from '../../context/UserContext'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -16,6 +17,7 @@ export default function Register() {
 
   const isPhoneVerified = !!location?.state?.number
   const isEmailVerified = !!location?.state?.email
+  const { websiteLogo } = useContext(UserContext)
 
   const initialValues = {
     phone: location?.state?.number || '',
@@ -97,7 +99,7 @@ export default function Register() {
                 </Link>
 
                 <Link to='/' className='mobile-logo mx-auto'>
-                  <img src='/images/logo.png' />
+                  <img src={websiteLogo} />
                 </Link>
               </div>
             </div>

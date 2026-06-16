@@ -8,7 +8,8 @@ const info = () => {
             const result = await getAllGames();
             if (result.success) {
                 if (result.games) {
-                    dispatch(setInfoData({ availableGames: result.games }));
+                    const sortedGames = result.games.sort((a, b) => (a.priority ?? Infinity) - (b.priority ?? Infinity));
+                    dispatch(setInfoData({ availableGames: sortedGames }));
                 } else {
                     Swal.fire({
                         icon: "error",

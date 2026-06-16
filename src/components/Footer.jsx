@@ -1,14 +1,17 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 
+import UserContext from '../context/UserContext'
+
 export default function Footer() {
+  const { websiteLogo } = useContext(UserContext)
   return (
     <footer className='site-footer minimal-footer py-4'>
       <div className='container'>
         <div className='footer-minimal-grid'>
           <div className='footer-nav-panel'>
             <Link to='/' className='footer-logo-link'>
-              <img src='/images/logo.png' alt='NMH Gaming' />
+              <img src={websiteLogo} alt='NMH Gaming' />
             </Link>
 
             <div className='footer-link-group'>

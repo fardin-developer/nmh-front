@@ -1,11 +1,12 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import React, { useEffect, useRef, useState, createRef } from 'react'
+import React, { useEffect, useRef, useState, createRef, useContext } from 'react'
 import { verifyotpSchema } from '../../models'
 import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import { useFormik } from 'formik'
 import Swal from 'sweetalert2'
 import { verifyOtp, sendOtp } from '../../api/apiService'
+import UserContext from '../../context/UserContext'
 
 const initialValues = {
   otp: '',
@@ -21,6 +22,7 @@ export default function Verifyotp() {
   const location = useLocation()
   const [loading, setLoading] = useState(false)
   const authIdentifier = location?.state?.email || location?.state?.number
+  const { websiteLogo } = useContext(UserContext)
 
   useEffect(() => {
     document.title = 'NMH Gaming - Verify'
@@ -171,7 +173,7 @@ export default function Verifyotp() {
                 </Link>
 
                 <Link to='/' className='mobile-logo mx-auto'>
-                  <img src='/images/logo.png' />
+                  <img src={websiteLogo} />
                 </Link>
               </div>
             </div>

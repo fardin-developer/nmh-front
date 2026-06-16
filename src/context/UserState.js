@@ -1,5 +1,5 @@
 import UserContext from "./UserContext"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 const UserState = (props) => {
   const [filteredgames, setFilteredgames] = useState([])
@@ -11,6 +11,23 @@ const UserState = (props) => {
     addMoney: false,
     countrySection: true
   })
+  // Initialize state from localStorage if available, otherwise use default
+  const [websiteLogo, setWebsiteLogo] = useState(() => {
+    return localStorage.getItem('websiteLogo') || '/images/logo.png';
+  })
+
+  useEffect(() => {
+    fetch('https://api.nmhgaming.com/api/v1/admin/public/settings/logo')
+      .then(res => res.json())
+      .then(data => {
+        if(data?.success && data?.data?.logoUrl) {
+          const newLogo = data.data.logoUrl;
+          setWebsiteLogo(newLogo);
+          localStorage.setItem('websiteLogo', newLogo); // Cache for next reload
+        }
+      })
+      .catch(err => console.error("Error fetching logo:", err));
+  }, [])
 
   const clickLoadingBar = () => {
     setModal({
@@ -34,7 +51,7 @@ const UserState = (props) => {
 
   return (
     <UserContext.Provider
-      value={{ progress, setProgress, clickLoadingBar, loader, setLoader, alert, setAlert, modal, setModal, filteredgames, setFilteredgames }}
+      value={{ progress, setProgress, clickLoadingBar, loader, setLoader, alert, setAlert, modal, setModal, filteredgames, setFilteredgames, websiteLogo }}
     >
       {props.children}
     </UserContext.Provider>
