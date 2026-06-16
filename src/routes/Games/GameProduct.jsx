@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Modal } from 'react-bootstrap'
 import Swal from 'sweetalert2'
 import { useSelector } from 'react-redux'
-import { getDiamondPacks, validatePlayerId, createWalletOrder, createUpiOrder, getValidationHistory, getOrderStatus } from '../../api/apiService'
+import { getDiamondPacks, validatePlayerId, createWalletOrder, createGatewayOrder, getValidationHistory, getOrderStatus } from '../../api/apiService'
 import { useInvoiceDownloader } from '../../hooks/useInvoiceDownloader'
 
 export default function GameProduct() {
@@ -27,6 +27,7 @@ export default function GameProduct() {
   const [validationMsg, setValidationMsg] = useState('')
   const [validationHistory, setValidationHistory] = useState([])
   const [directCheckout, setDirectCheckout] = useState(true)
+  const [selectedGateway, setSelectedGateway] = useState('') // 'wavepay' | 'yomabank' | '' (wallet)
   const [historyModal, setHistoryModal] = useState(false)
   const [checkoutSheetOpen, setCheckoutSheetOpen] = useState(false)
   const [successOrderData, setSuccessOrderData] = useState(null)
@@ -154,12 +155,13 @@ export default function GameProduct() {
     return match?.name || value
   }
   // cashback is discount
+  // directCheckout = true means gateway payment (wavepay/yomabank), false = wallet
   const payableAmount = selectedPack
     ? (!directCheckout && selectedPack.cashback > 0
       ? Math.max(0, selectedPack.amount - selectedPack.cashback)
       : selectedPack.amount)
     : 0
-  const canCheckout = !(isValidatingPlayer || isValidating)
+  const canCheckout = !(isValidatingPlayer || isValidating) && (directCheckout ? !!selectedGateway : true)
 
   useEffect(() => {
     if (!gameData) return
@@ -296,10 +298,15 @@ export default function GameProduct() {
       }
       setIsValidating(false)
     } else {
+      // Gateway payment (wavepay / yomabank)
+      if (!selectedGateway) {
+        Swal.fire({ icon: 'warning', title: '', text: 'Please choose a payment gateway.', confirmButtonColor: '#FF0000' })
+        return
+      }
       setIsValidating(true)
       try {
         const redirectUrl = `${window.location.origin}/order-status#returnGameId=${encodeURIComponent(gameId)}`
-        const orderRes = await createUpiOrder(selectedPack._id, playerId, server, 1, redirectUrl)
+        const orderRes = await createGatewayOrder(selectedPack._id, playerId, server, 1, selectedGateway, redirectUrl)
         if (orderRes.success && orderRes.transaction?.paymentUrl) {
           const createdOrderId =
             orderRes?.orderId ||
@@ -318,13 +325,13 @@ export default function GameProduct() {
         } else {
           Swal.fire({
             icon: 'error',
-            title: 'UPI Failed',
-            text: orderRes.message || 'Failed to initialize UPI payment.',
+            title: 'Payment Failed',
+            text: orderRes.message || 'Failed to initialize payment.',
             confirmButtonColor: '#e74c3c'
           })
         }
       } catch (err) {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong during UPI payment initialization.', confirmButtonColor: '#e74c3c' })
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong during payment initialization.', confirmButtonColor: '#e74c3c' })
       }
       setIsValidating(false)
     }
@@ -712,6 +719,7 @@ export default function GameProduct() {
         show={checkoutSheetOpen && !!selectedPack}
         onHide={() => setCheckoutSheetOpen(false)}
         className='gp-checkout-sheet-modal'
+        contentClassName='home-app-page'
         animation={false}
         keyboard
       >
@@ -765,13 +773,14 @@ export default function GameProduct() {
           <div className='gp-sheet-payment'>
             <div className='gp-sheet-player-title'>Choose Payment Method</div>
 
+            {/* NMH Coins (Wallet) */}
             <button
               type='button'
               className={`gp-sheet-method ${!directCheckout ? 'is-active' : ''}`}
-              onClick={() => setDirectCheckout(false)}
+              onClick={() => { setDirectCheckout(false); setSelectedGateway('') }}
             >
               <div className='gp-sheet-method-left'>
-                <img src='/images/dos.svg' alt='dos' />
+                <img src='/images/dos.svg' alt='wallet' />
                 <div>
                   <h6>NMH Coins</h6>
                   {/* cashback is discount */}
@@ -784,16 +793,35 @@ export default function GameProduct() {
               </div>
             </button>
 
+            {/* Wavepay Gateway */}
             <button
               type='button'
-              className={`gp-sheet-method ${directCheckout ? 'is-active' : ''}`}
-              onClick={() => setDirectCheckout(true)}
+              className={`gp-sheet-method ${directCheckout && selectedGateway === 'wavepay' ? 'is-active' : ''}`}
+              onClick={() => { setDirectCheckout(true); setSelectedGateway('wavepay') }}
             >
               <div className='gp-sheet-method-left'>
-                <img src='/images/upi.svg' alt='upi' />
+                <div className='gp-sheet-gateway-icon gp-gateway-wavepay'>W</div>
                 <div>
-                  <h6>UPI Apps</h6>
-                  <p>Pay with GPay, PhonePe, Paytm and more</p>
+                  <h6>Wavepay</h6>
+                  <p>Pay via Wavepay mobile wallet</p>
+                </div>
+              </div>
+              <div className='gp-sheet-method-right'>
+                <strong>₹{selectedPack?.amount}</strong>
+              </div>
+            </button>
+
+            {/* Yoma Bank Gateway */}
+            <button
+              type='button'
+              className={`gp-sheet-method ${directCheckout && selectedGateway === 'yomabank' ? 'is-active' : ''}`}
+              onClick={() => { setDirectCheckout(true); setSelectedGateway('yomabank') }}
+            >
+              <div className='gp-sheet-method-left'>
+                <div className='gp-sheet-gateway-icon gp-gateway-yoma'>Y</div>
+                <div>
+                  <h6>Yoma Bank</h6>
+                  <p>Pay via Yoma Bank transfer</p>
                 </div>
               </div>
               <div className='gp-sheet-method-right'>
@@ -824,7 +852,9 @@ export default function GameProduct() {
                     Processing...
                   </>
                 ) : (
-                  `Proceed to Pay ₹${payableAmount}`
+                  directCheckout
+                    ? (selectedGateway ? `Pay ₹${payableAmount} via ${selectedGateway === 'wavepay' ? 'Wavepay' : 'Yoma Bank'}` : 'Select a Payment Gateway')
+                    : `Pay ₹${payableAmount} with NMH Coins`
                 )}
               </button>
             )}
@@ -832,7 +862,7 @@ export default function GameProduct() {
         </Modal.Body>
       </Modal>
 
-      <Modal centered show={infomodal} onHide={() => setInfomodal(false)} className='detail-modal'>
+      <Modal centered show={infomodal} onHide={() => setInfomodal(false)} className='detail-modal' contentClassName='home-app-page'>
         <Modal.Header closeButton className='border-0'></Modal.Header>
         <Modal.Body className='p-md-4 p-3 pt-0'>
           <p className='mb-0'>
@@ -846,9 +876,9 @@ export default function GameProduct() {
         </Modal.Body>
       </Modal>
 
-      <Modal centered show={historyModal} onHide={() => setHistoryModal(false)} className='detail-modal'>
+      <Modal centered show={historyModal} onHide={() => setHistoryModal(false)} className='detail-modal' contentClassName='home-app-page'>
         <Modal.Header closeButton className='border-0 pb-0'>
-          <Modal.Title style={{ fontSize: '20px', color: '#1a1a2e', fontWeight: 700, letterSpacing: '0.5px' }}>
+          <Modal.Title style={{ fontSize: '20px', color: '#fff', fontWeight: 700, letterSpacing: '0.5px' }}>
             <div className="d-flex align-items-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#FF0000" className="bi bi-clock-history me-2" viewBox="0 0 16 16">
                 <path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022zm2.004.45a7 7 0 0 0-.985-.299l.219-.976q.576.129 1.126.342zm1.37.71a7 7 0 0 0-.439-.27l.493-.87a8 8 0 0 1 .979.654l-.615.789a7 7 0 0 0-.418-.302zm1.834 1.79a7 7 0 0 0-.653-.796l.724-.69q.406.429.747.91zm.744 1.352a7 7 0 0 0-.214-.468l.893-.45a8 8 0 0 1 .45 1.088l-.95.313a7 7 0 0 0-.179-.483m.53 2.507a7 7 0 0 0-.1-1.025l.985-.17q.1.58.116 1.17zm-.131 1.538q.05-.254.081-.51l.993.123a8 8 0 0 1-.23 1.155l-.964-.267q.069-.247.12-.501m-.952 2.379q.276-.436.486-.908l.914.405q-.24.54-.555 1.038zm-.964 1.205q.183-.183.35-.378l.758.653a8 8 0 0 1-.401.432z" />
@@ -860,7 +890,7 @@ export default function GameProduct() {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className='p-md-4 p-3 pt-3'>
-          <p style={{ color: '#6c757d', fontSize: '14px', marginBottom: '16px' }}>Select an account from your recent purchases to auto-fill the details.</p>
+          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '14px', marginBottom: '16px' }}>Select an account from your recent purchases to auto-fill the details.</p>
           <div className='d-flex flex-column gap-2'>
             {validationHistory.map((item) => (
               <div
@@ -882,8 +912,8 @@ export default function GameProduct() {
                   setHistoryModal(false)
                 }}
                 style={{
-                  background: '#ffffff',
-                  border: '1px solid #eef0f2',
+                  background: '#242730',
+                  border: '1px solid rgba(255,255,255,0.08)',
                   borderRadius: '12px',
                   padding: '10px 12px',
                   cursor: 'pointer',
@@ -899,13 +929,13 @@ export default function GameProduct() {
                   e.currentTarget.style.transform = 'translateY(-2px)'
                   e.currentTarget.style.boxShadow = '0 6px 15px rgba(255, 0, 0, 0.1)'
                   e.currentTarget.style.border = '1px solid rgba(255, 0, 0, 0.3)'
-                  e.currentTarget.style.background = '#fcfcfd'
+                  e.currentTarget.style.background = 'rgba(255,0,0,0.18)'
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)'
                   e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)'
-                  e.currentTarget.style.border = '1px solid #eef0f2'
-                  e.currentTarget.style.background = '#ffffff'
+                  e.currentTarget.style.border = '1px solid rgba(255,255,255,0.08)'
+                  e.currentTarget.style.background = '#242730'
                 }}
               >
                 <div style={{
@@ -924,10 +954,10 @@ export default function GameProduct() {
                   </svg>
                 </div>
                 <div className="flex-grow-1">
-                  <div style={{ fontWeight: 600, color: '#1a1a2e', fontSize: '14px', letterSpacing: '0.2px', marginBottom: '2px' }}>{item.playerName}</div>
-                  <div style={{ color: '#495057', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                    <span style={{ background: '#f1f3f5', padding: '2px 6px', borderRadius: '4px', whiteSpace: 'nowrap' }}>ID: {item.playerId}</span>
-                    {item.server && <span style={{ background: '#f1f3f5', padding: '2px 6px', borderRadius: '4px', whiteSpace: 'nowrap' }}>Server: {resolveServerLabel(item.server)}</span>}
+                  <div style={{ fontWeight: 600, color: '#fff', fontSize: '14px', letterSpacing: '0.2px', marginBottom: '2px' }}>{item.playerName}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                    <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', whiteSpace: 'nowrap' }}>ID: {item.playerId}</span>
+                    {item.server && <span style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', whiteSpace: 'nowrap' }}>Server: {resolveServerLabel(item.server)}</span>}
                   </div>
                 </div>
                 <div style={{ color: '#FF0000', opacity: 0.8 }}>
@@ -939,15 +969,15 @@ export default function GameProduct() {
             ))}
           </div>
 
-          <div className='d-flex gap-2 mt-4 pt-3' style={{ borderTop: '1px solid #eef0f2' }}>
+          <div className='d-flex gap-2 mt-4 pt-3' style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
             <button
               type="button"
               className='btn flex-grow-1'
               onClick={() => setHistoryModal(false)}
               style={{
-                background: '#f8f9fa',
-                color: '#495057',
-                border: '1px solid #dee2e6',
+                background: '#242730',
+                color: 'rgba(255,255,255,0.8)',
+                border: '1px solid rgba(255,255,255,0.08)',
                 borderRadius: '8px',
                 padding: '8px 16px',
                 fontWeight: 500,
@@ -958,8 +988,8 @@ export default function GameProduct() {
                 justifyContent: 'center',
                 gap: '8px'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#e9ecef'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = '#f8f9fa'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = '#242730'; }}
             >
               Cancel
             </button>
@@ -1002,7 +1032,7 @@ export default function GameProduct() {
         </Modal.Body>
       </Modal>
 
-      <Modal centered show={!!successOrderData} onHide={() => setSuccessOrderData(null)} backdrop="static" keyboard={false}>
+      <Modal centered show={!!successOrderData} onHide={() => setSuccessOrderData(null)} backdrop="static" keyboard={false} contentClassName='home-app-page'>
         <Modal.Body className="p-4 text-center position-relative">
           <button
             type="button"

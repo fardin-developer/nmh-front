@@ -174,6 +174,18 @@ export const createUpiOrder = (diamondPackId, playerId, server, quantity = 1, re
   request('/order/diamond-pack-upi', 'POST', { diamondPackId, playerId, server, quantity, redirectUrl }, true)
 
 /**
+ * Create a diamond pack order using a payment gateway (wavepay / yomabank)
+ * @param {string} diamondPackId
+ * @param {string} playerId
+ * @param {string} server
+ * @param {number} quantity
+ * @param {'wavepay'|'yomabank'} gateway
+ * @param {string} redirectUrl
+ */
+export const createGatewayOrder = (diamondPackId, playerId, server, quantity = 1, gateway, redirectUrl) =>
+  request('/order/diamond-pack-gateway', 'POST', { diamondPackId, playerId, server, quantity, gateway, redirectUrl }, true)
+
+/**
  * Check Order Status (UPI)
  * @param {string} orderId
  */

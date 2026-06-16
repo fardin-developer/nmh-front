@@ -78,8 +78,7 @@ export default function Header() {
               {localStorage.getItem('authToken') ? (
                 <>
                   <button type='button' className='btn-coin header-wallet-btn' onClick={() => setModal({ ...modal, addMoney: true })}>
-                    <img src='/images/coin.svg' alt='coin' style={{ height: '22px' }} />
-                    <span className='fw mx-2 fs-6'>{Number(profileData.walletBalance ?? profileData.wallet ?? 0).toFixed(2)}</span>
+<svg viewBox="0 0 24 24" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="#FFFFFF"></circle><text x="12" y="16.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#E7121B" font-family="sans-serif">₮</text></svg>                    <span className='fw mx-2 fs-6'>{Number(profileData.walletBalance ?? profileData.wallet ?? 0).toFixed(2)}</span>
                     <img src='/images/rounded-plus.svg' alt='plus' style={{ height: '22px' }} />
                   </button>
 

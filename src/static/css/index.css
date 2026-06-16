@@ -2195,7 +2195,7 @@ aside ul .nav-link {
   -webkit-transition: 300ms;
   transition: 300ms;
   position: relative;
-  color: #00000075;
+  color: #ffffff;
   cursor: pointer;
 }
 
@@ -3947,11 +3947,11 @@ aside ul .nav-link:hover {
 }
 .gp-checkout-sheet-modal .modal-content {
   width: 100%;
-  background: #fff;
-  border: 1px solid #EAECF0;
+  background: #1e2028;
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 24px 24px 0 0;
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.10);
-  color: #000;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.40);
+  color: #fff;
   border-radius: 16px;
 }
 
@@ -3963,7 +3963,7 @@ aside ul .nav-link:hover {
   width: 64px;
   height: 5px;
   border-radius: 999px;
-  background: #EAECF0;
+  background: rgba(255,255,255,0.15);
   margin: 0 auto 12px;
 }
 
@@ -3984,28 +3984,28 @@ aside ul .nav-link:hover {
   font-size: 18px;
   font-weight: 700;
   font-family: 'Poppins', sans-serif;
-  color: #000;
+  color: #fff;
 }
 
 .gp-sheet-close {
   border: 0;
   background: transparent;
-  color: rgb(232, 1, 1);
+  color: rgba(255,255,255,0.6);
   font-size: 28px;
   line-height: 1;
   padding: 0;
 }
 .gp-sheet-close:hover {
-  color: #000;
+  color: #fff;
 }
 
 .gp-sheet-product-card,
 .gp-sheet-player-card,
 .gp-sheet-payment {
-  border: 2px solid #EAECF0;
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 14px;
   padding: 14px;
-  background: #F9FAFB;
+  background: #242730;
   margin-bottom: 12px;
 }
 
@@ -4014,7 +4014,7 @@ aside ul .nav-link:hover {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: rgba(0, 0, 0, 0.45);
+  color: rgba(255,255,255,0.45);
   font-family: 'Roboto', sans-serif;
   margin-bottom: 8px;
 }
@@ -4024,29 +4024,23 @@ aside ul .nav-link:hover {
   font-weight: 700;
   font-family: 'Poppins', sans-serif;
   margin: 0;
-  color: #000;
+  color: #fff;
 }
 .gp-sheet-product-card p {
   margin: 4px 0 10px;
-  color: rgba(0, 0, 0, 0.55);
+  color: rgba(255,255,255,0.55);
   font-size: 13px;
   font-family: 'Roboto', sans-serif;
 }
 
 .gp-sheet-price-row,
 .gp-sheet-player-row {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
   align-items: center;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
   justify-content: space-between;
   font-size: 13px;
   font-family: 'Roboto', sans-serif;
-  color: rgba(0, 0, 0, 0.55);
+  color: rgba(255,255,255,0.55);
   margin-bottom: 8px;
 }
 .gp-sheet-price-row:last-child,
@@ -4055,46 +4049,40 @@ aside ul .nav-link:hover {
 }
 .gp-sheet-price-row strong,
 .gp-sheet-player-row strong {
-  color: #000;
+  color: #fff;
   font-size: 14px;
   font-weight: 600;
 }
 
 .gp-sheet-saving strong {
-  color: #1a87d9;
+  color: #FF0000;
 }
 
 .gp-sheet-method {
   width: 100%;
-  border: 2px solid #EAECF0;
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 14px;
-  background: #fff;
-  display: -webkit-box;
-  display: -ms-flexbox;
+  background: #2d3038;
   display: flex;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
   align-items: center;
-  -webkit-box-pack: justify;
-  -ms-flex-pack: justify;
   justify-content: space-between;
   gap: 12px;
   padding: 12px;
   margin-bottom: 10px;
   transition: all 0.2s ease;
-  color: #000;
+  color: #fff;
 }
 .gp-sheet-method:last-child {
   margin-bottom: 0;
 }
 .gp-sheet-method:hover {
-  border-color: #1a87d9;
-  background: #1a87d91a;
+  border-color: rgba(255,0,0,0.4);
+  background: rgba(255,0,0,0.08);
 }
 .gp-sheet-method.is-active {
-  border-color: #1a87d9;
-  background: #1a87d91a;
-  box-shadow: inset 0 0 0 1px rgba(26, 135, 217, 0.2);
+  border-color: #FF0000;
+  background: rgba(255,0,0,0.14);
+  box-shadow: inset 0 0 0 1px rgba(255,0,0,0.25);
 }
 
 .gp-sheet-method-left {
@@ -4120,13 +4108,13 @@ aside ul .nav-link:hover {
   font-size: 14px;
   font-weight: 700;
   font-family: 'Roboto', sans-serif;
-  color: #000;
+  color: #fff;
 }
 .gp-sheet-method-left p {
   margin: 0;
   font-size: 12px;
   font-family: 'Roboto', sans-serif;
-  color: rgba(0, 0, 0, 0.55);
+  color: rgba(255,255,255,0.5);
 }
 
 .gp-sheet-method-right {
@@ -4138,11 +4126,11 @@ aside ul .nav-link:hover {
   display: block;
   font-size: 15px;
   font-weight: 700;
-  color: #000;
+  color: #fff;
 }
 .gp-sheet-method-right small {
   font-size: 11px;
-  color: #1a87d9;
+  color: #FF0000;
   font-weight: 600;
 }
 
@@ -4161,28 +4149,52 @@ aside ul .nav-link:hover {
 }
 
 .gp-sheet-login-btn {
-  background: #000;
+  background: #242730;
   color: #fff;
-  border: 2px solid #000;
+  border: 1px solid rgba(255,255,255,0.15);
 }
 .gp-sheet-login-btn:hover {
-  background: #fff;
-  color: #000;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
 }
 
 .gp-sheet-pay-btn {
-  background: #1a87d9;
+  background: #FF0000;
   color: #fff;
-  border: 2px solid #1a87d9;
+  border: 2px solid #FF0000;
 }
 .gp-sheet-pay-btn:hover {
-  background: #fff;
-  color: #1a87d9;
+  background: #d40000;
+  color: #fff;
+  border-color: #d40000;
 }
 
 .gp-sheet-pay-btn:disabled {
   opacity: 0.65;
   pointer-events: none;
+}
+
+/* Gateway icon badges */
+.gp-sheet-gateway-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 900;
+  font-family: 'Poppins', sans-serif;
+  flex-shrink: 0;
+  color: #fff;
+}
+.gp-gateway-wavepay {
+  background: linear-gradient(135deg, #e63946, #c1121f);
+  box-shadow: 0 4px 10px rgba(230,57,70,0.35);
+}
+.gp-gateway-yoma {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  box-shadow: 0 4px 10px rgba(29,78,216,0.35);
 }
 
 @media (max-width: 575px) {
@@ -5023,7 +5035,7 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .site-footer ul li a {
-  color: rgba(255, 255, 255, 0.66);
+  color: #ffffff;
   font-size: 15px;
   font-weight: 500;
   text-decoration: none;
@@ -5221,7 +5233,7 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 .minimal-footer ul li a {
-  color: rgba(255, 255, 255, 0.62);
+  color: #ffffff;
   font-size: 14px;
   font-weight: 500;
 }
@@ -6183,7 +6195,7 @@ input[type='number']::-webkit-outer-spin-button {
   color: rgba(255, 255, 255, 0.6);
 }
 
-.home-app-page .gp-sheet-modal .modal-content {
+.home-app-page.modal-content {
   background: #20232b;
   color: #fff;
   border-color: rgba(255, 255, 255, 0.08);
@@ -6229,20 +6241,49 @@ input[type='number']::-webkit-outer-spin-button {
   color: #fff;
 }
 
-.home-app-page .modal-content {
+.home-app-page.modal-content {
   background: #20232b;
   color: #fff;
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-.home-app-page .modal-header {
+.home-app-page .modal-header, .home-app-page.modal-content .modal-header {
   border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
-.home-app-page .modal-footer {
+.home-app-page .modal-footer, .home-app-page.modal-content .modal-footer {
   border-top-color: rgba(255, 255, 255, 0.08);
 }
 
 .home-app-page .btn-close {
   filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.home-app-page .gp-sheet-login-btn {
+  background: #242730;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.home-app-page .gp-sheet-login-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.home-app-page .gp-sheet-pay-btn {
+  background: #FF0000;
+  color: #fff;
+  border-color: #FF0000;
+}
+
+.home-app-page .gp-sheet-pay-btn:hover {
+  background: #d40000;
+  border-color: #d40000;
+  color: #fff;
+}
+
+.home-app-page .gp-sheet-pay-btn:disabled {
+  background: #FF0000;
+  border-color: #FF0000;
+  opacity: 0.5;
 }

@@ -15,16 +15,16 @@ export default function Footer() {
               <h6>Company</h6>
               <ul>
                 <li>
-                  <Link to='/about-us'>About Us</Link>
+                  <Link className='text-white' to='/about-us'>About Us</Link>
                 </li>
                 <li>
-                  <Link to='/terms-conditions'>Terms</Link>
+                  <Link className='text-white' to='/terms-conditions'>Terms</Link>
                 </li>
                 <li>
-                  <Link to='/privacy-policy'>Privacy</Link>
+                  <Link className='text-white' to='/privacy-policy'>Privacy</Link>
                 </li>
                 <li>
-                  <Link to='/refund-policy'>Refund</Link>
+                  <Link className='text-white' to='/refund-policy'>Refund</Link>
                 </li>
               </ul>
             </div>
