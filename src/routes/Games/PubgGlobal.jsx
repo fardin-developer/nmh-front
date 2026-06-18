@@ -268,7 +268,7 @@ export default function MobileLegendsRussia() {
                                 <div className='cl-icon'>
                                   <img src={`${process.env.REACT_APP_API_ROOT_URL}static/uploads/${logo}`} alt='diamond' />
                                 </div>
-                                <h6 className='cl-price'>₹{amount}</h6>
+                                <h6 className='cl-price'>MMK{amount}</h6>
                               </div>
                             </label>
                           </div>
@@ -303,10 +303,10 @@ export default function MobileLegendsRussia() {
                               </div>
                             </div>
                             <div className='d-flex'>
-                              <p className='rupee ms-auto'>(=₹{(item.amount - item.dosOffer).toFixed(2)})</p>
+                              <p className='rupee ms-auto'>(=MMK{(item.amount - item.dosOffer).toFixed(2)})</p>
                             </div>
                             <div className='d-flex'>
-                              <del className='old-price ms-auto'>₹{item.amount}</del>
+                              <del className='old-price ms-auto'>MMK{item.amount}</del>
                             </div>
                           </div>
                         </div>
@@ -340,7 +340,7 @@ export default function MobileLegendsRussia() {
                                 <img src='/images/plus.svg' alt='more' />
                               </div>
                               <div>
-                                <h3 className='coin-value'>₹{item.amount}</h3>
+                                <h3 className='coin-value'>MMK{item.amount}</h3>
                               </div>
                             </div>
                           </div>
@@ -352,7 +352,7 @@ export default function MobileLegendsRussia() {
                   {isUserValidated && values.itemId && (
                     <div className='col-12 pay-btnbox mb-md-4'>
                       <button type='button' className='btn btn-pay w-100' disabled={!isUserValidated || !values.itemId} onClick={() => (localStorage.getItem('authToken') ? handleSubmit() : navigate('/send-otp'))}>
-                        Proceed to pay ₹{directCheckout ? item.amount : item.amount - item.dosOffer}
+                        Proceed to pay MMK{directCheckout ? item.amount : item.amount - item.dosOffer}
                       </button>
                     </div>
                   )}

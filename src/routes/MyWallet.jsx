@@ -170,7 +170,7 @@ export default function MyWallet() {
                                     <div className='d-flex align-items-center mt-2 border-top pt-2'>
                                       <p className='card-subtitle mb-0' style={{ fontSize: '12px', color: '#888' }}>{moment(element?.createdAt).format('DD-MM-YYYY LT')}</p>
                                       <p className={`card-ammount ms-auto mb-0 fw-bold text-${isCredit ? 'success' : 'danger'}`} style={{ fontSize: '15px' }}>
-                                        {isCredit ? '+' : '-'} ₹ {element.amount?.toFixed(2)}
+                                        {isCredit ? '+' : '-'} MMK {element.amount?.toFixed(2)}
                                       </p>
                                     </div>
                                   </div>

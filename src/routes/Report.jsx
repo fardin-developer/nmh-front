@@ -529,7 +529,7 @@ export default function Report() {
                                   </div>
                                 </div>
                                 <div className='text-end flex-shrink-0 d-flex flex-column align-items-end'>
-                                  <h6 className="mb-1 fw-bold" style={{ color: '#fff', fontSize: '15px' }}>₹ {element.amount?.toFixed(2)}</h6>
+                                  <h6 className="mb-1 fw-bold" style={{ color: '#fff', fontSize: '15px' }}>MMK {element.amount?.toFixed(2)}</h6>
                                   {(element?.status === 'success' || element?.status === 'completed') && (
                                     <span className='badge rounded-pill' style={{ backgroundColor: 'rgba(16,185,129,0.18)', color: '#10b981', padding: '6px 12px', fontSize: '10px', fontWeight: '700' }}>SUCCESS</span>
                                   )}
@@ -570,7 +570,7 @@ export default function Report() {
                                   </div>
                                 </div>
                                 <div className='text-end flex-shrink-0 d-flex flex-column align-items-end'>
-                                  <h6 className="mb-2 fw-bold" style={{ color: '#fff', fontSize: '16px' }}>₹ {element.amount?.toFixed(2)}</h6>
+                                  <h6 className="mb-2 fw-bold" style={{ color: '#fff', fontSize: '16px' }}>MMK {element.amount?.toFixed(2)}</h6>
                                   {(element?.status === 'success' || element?.status === 'completed') && (
                                     <span className='badge rounded-pill' style={{ backgroundColor: 'rgba(16,185,129,0.18)', color: '#10b981', padding: '6px 12px', fontSize: '10px', fontWeight: '700' }}>SUCCESS</span>
                                   )}
@@ -603,7 +603,7 @@ export default function Report() {
                                   </div>
                                 </div>
                                 <div className='text-end flex-shrink-0 d-flex flex-column align-items-end'>
-                                  <h6 className={`mb-2 fw-bold`} style={{ fontSize: '16px', color: isCredit ? '#10b981' : '#ef4444' }}>{isCredit ? '+' : '-'} ₹ {element.amount?.toFixed(2)}</h6>
+                                  <h6 className={`mb-2 fw-bold`} style={{ fontSize: '16px', color: isCredit ? '#10b981' : '#ef4444' }}>{isCredit ? '+' : '-'} MMK {element.amount?.toFixed(2)}</h6>
                                   <span className='badge rounded-pill' style={{ backgroundColor: isCredit ? 'rgba(16,185,129,0.18)' : 'rgba(239,68,68,0.18)', color: isCredit ? '#10b981' : '#ef4444', padding: '6px 12px', fontSize: '10px', fontWeight: '700' }}>{element.transactionType?.toUpperCase()}</span>
                                 </div>
                               </div>
@@ -642,7 +642,7 @@ export default function Report() {
           {selectedOrder && (
             <div className="d-flex flex-column gap-3">
               <div className="text-center mb-2">
-                <h2 className="fw-bold mb-2" style={{ color: '#fff' }}>₹ {selectedOrder.amount?.toFixed(2)}</h2>
+                <h2 className="fw-bold mb-2" style={{ color: '#fff' }}>MMK {selectedOrder.amount?.toFixed(2)}</h2>
                 {(selectedOrder.status === 'success' || selectedOrder.status === 'completed') && (
                   <span className='badge rounded-pill' style={{ backgroundColor: 'rgba(16,185,129,0.18)', color: '#10b981', padding: '6px 12px', fontSize: '12px', fontWeight: '700' }}>SUCCESS</span>
                 )}

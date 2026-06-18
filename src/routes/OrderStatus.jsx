@@ -317,7 +317,7 @@ export default function OrderStatus() {
             background: 'rgba(128,128,128,0.08)', borderRadius: '12px', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem'
           }}>
             <span style={{ fontWeight: 700, fontSize: '15px' }}>Total Amount</span>
-            <span style={{ fontWeight: 800, color: '#008ad8', fontSize: '20px' }}>₹{order.amount || '0.00'}</span>
+            <span style={{ fontWeight: 800, color: '#008ad8', fontSize: '20px' }}>MMK{order.amount || '0.00'}</span>
           </div>
 
         </div>

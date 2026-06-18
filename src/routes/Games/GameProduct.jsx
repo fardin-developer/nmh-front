@@ -701,7 +701,7 @@ export default function GameProduct() {
                               <div className='cl-icon'>
                                 <img src={pack.logo} alt={pack.description} style={{ maxWidth: '48px', maxHeight: '48px', objectFit: 'contain' }} />
                               </div>
-                              <h6 className='cl-price'>₹{pack.amount}</h6>
+                              <h6 className='cl-price'>MMK{pack.amount}</h6>
                             </div>
                           </label>
                         </div>
@@ -738,12 +738,12 @@ export default function GameProduct() {
             {selectedPack?.subDescription && <p>{selectedPack.subDescription}</p>}
             <div className='gp-sheet-price-row'>
               <span>Amount</span>
-              <strong>₹{selectedPack?.amount}</strong>
+              <strong>MMK{selectedPack?.amount}</strong>
             </div>
             {!directCheckout && selectedPack?.cashback > 0 && (
               <div className='gp-sheet-price-row gp-sheet-saving'>
                 <span>You Pay</span>
-                <strong>₹{payableAmount}</strong>
+                <strong>MMK{payableAmount}</strong>
               </div>
             )}
           </div>
@@ -788,8 +788,8 @@ export default function GameProduct() {
                 </div>
               </div>
               <div className='gp-sheet-method-right'>
-                <strong>₹{selectedPack?.cashback ? Math.max(0, selectedPack.amount - selectedPack.cashback) : selectedPack?.amount}</strong>
-                {selectedPack?.cashback > 0 && <small>Save ₹{selectedPack.cashback}</small>}
+                <strong>MMK{selectedPack?.cashback ? Math.max(0, selectedPack.amount - selectedPack.cashback) : selectedPack?.amount}</strong>
+                {selectedPack?.cashback > 0 && <small>Save MMK{selectedPack.cashback}</small>}
               </div>
             </button>
 
@@ -807,7 +807,7 @@ export default function GameProduct() {
                 </div>
               </div>
               <div className='gp-sheet-method-right'>
-                <strong>₹{selectedPack?.amount}</strong>
+                <strong>MMK{selectedPack?.amount}</strong>
               </div>
             </button>
 
@@ -825,7 +825,7 @@ export default function GameProduct() {
                 </div>
               </div>
               <div className='gp-sheet-method-right'>
-                <strong>₹{selectedPack?.amount}</strong>
+                <strong>MMK{selectedPack?.amount}</strong>
               </div>
             </button>
           </div>
@@ -853,8 +853,8 @@ export default function GameProduct() {
                   </>
                 ) : (
                   directCheckout
-                    ? (selectedGateway ? `Pay ₹${payableAmount} via ${selectedGateway === 'wavepay' ? 'Wavepay' : 'Yoma Bank'}` : 'Select a Payment Gateway')
-                    : `Pay ₹${payableAmount} with NMH Coins`
+                    ? (selectedGateway ? `Pay MMK${payableAmount} via ${selectedGateway === 'wavepay' ? 'Wavepay' : 'Yoma Bank'}` : 'Select a Payment Gateway')
+                    : `Pay MMK${payableAmount} with NMH Coins`
                 )}
               </button>
             )}
@@ -1154,7 +1154,7 @@ export default function GameProduct() {
             })()}
             <div className="d-flex justify-content-between">
               <span className="text-muted">Amount:</span>
-              <span className="fw-bold" style={{ color: '#FF0000', fontSize: '16px' }}>₹{successOrderData?.order?.amount}</span>
+              <span className="fw-bold" style={{ color: '#FF0000', fontSize: '16px' }}>MMK{successOrderData?.order?.amount}</span>
             </div>
           </div>
 

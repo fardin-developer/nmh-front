@@ -146,7 +146,7 @@ export default function Invoice() {
 
                       <div className='d-flex py-1 last-br'>
                         <div className='left-order'>Total</div>
-                        <div className='right-order ms-auto'>₹ {invoice?.amount}</div>
+                        <div className='right-order ms-auto'>MMK {invoice?.amount}</div>
                       </div>
                     </div>
 
@@ -288,7 +288,7 @@ export default function Invoice() {
 
                       <div className='d-flex py-1 last-br'>
                         <div className='left-order'>Total</div>
-                        <div className='right-order ms-auto'>₹ {invoice?.amount}</div>
+                        <div className='right-order ms-auto'>MMK {invoice?.amount}</div>
                       </div>
                     </div>
 

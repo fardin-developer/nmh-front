@@ -65,7 +65,7 @@ export default function Addmoney({ modal, setModal }) {
       <Modal.Header closeButton className='border-0 py-0'></Modal.Header>
       <form className='modal-body px-md-4 px-3 mt-0 pt-0 pb-md-4' autoComplete='off' onSubmit={handleSubmit}>
         <h5 className='text-center'>Add Coins</h5>
-        <p>Note: 1 NMH Coin = ₹1</p>
+        <p>Note: 1 NMH Coin = MMK1</p>
         <div>
           <label htmlFor='Amount' className='form-label input-label'>
             Amount

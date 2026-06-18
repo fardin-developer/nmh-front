@@ -90,7 +90,7 @@ export default function OrderCompleted({ data, setComplated }) {
               <p>Total</p>
             </div>
             <div className='right-title ms-auto'>
-              <p>₹ {data.amount}</p>
+              <p>MMK {data.amount}</p>
             </div>
           </div>
         </div>
