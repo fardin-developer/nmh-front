@@ -41,7 +41,7 @@ export default function Icons() {
         </symbol>
 
         <symbol id="icon_backarrow" viewBox="0 0 16 14" fill="none">
-          <path d="M1 7L7 1M1 7L7 13M1 7L15 7" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M1 7L7 1M1 7L7 13M1 7L15 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
         </symbol>
 
         {/* <symbol id="icon_profile" fill="currentColor" viewBox="0 0 16 16"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />

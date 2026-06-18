@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Modal } from 'react-bootstrap'
 import Swal from 'sweetalert2'
 import { useSelector } from 'react-redux'
-import { getDiamondPacks, validatePlayerId, createWalletOrder, createGatewayOrder, getValidationHistory, getOrderStatus } from '../../api/apiService'
+import { getDiamondPacks, validatePlayerId, createWalletOrder, createGatewayOrder, getValidationHistory, getOrderStatus, getYomaBankStatus } from '../../api/apiService'
 import { useInvoiceDownloader } from '../../hooks/useInvoiceDownloader'
 
 export default function GameProduct() {
@@ -31,9 +31,58 @@ export default function GameProduct() {
   const [historyModal, setHistoryModal] = useState(false)
   const [checkoutSheetOpen, setCheckoutSheetOpen] = useState(false)
   const [successOrderData, setSuccessOrderData] = useState(null)
+  const [yomaQrTransaction, setYomaQrTransaction] = useState(null)
+  const [yomaPaymentStatus, setYomaPaymentStatus] = useState('pending')
   const profileData = useSelector((state) => state.profileData)
   const { downloadingInvoice, downloadPurchaseInvoice } = useInvoiceDownloader()
   const skipValidationRef = useRef(false)
+
+  // Polling for YomaBank MMQR status
+  useEffect(() => {
+    if (!yomaQrTransaction?.orderId) return
+
+    let stopped = false
+    let timer = null
+
+    const poll = async () => {
+      try {
+        const res = await getYomaBankStatus(yomaQrTransaction.orderId)
+        if (!res.success) {
+          throw new Error(res.error || 'Status check failed')
+        }
+
+        const status = res.data?.status
+
+        if (stopped) return
+
+        setYomaPaymentStatus(status)
+
+        if (status === 'success' || status === 'completed') {
+          navigate(`/order-status?orderId=${yomaQrTransaction.orderId}`)
+          setYomaQrTransaction(null)
+          return
+        }
+
+        if (status === 'failed' || status === 'cancelled') {
+          return
+        }
+
+        timer = setTimeout(poll, 3000)
+      } catch (error) {
+        console.error(error)
+        if (!stopped) {
+          timer = setTimeout(poll, 5000)
+        }
+      }
+    }
+
+    poll()
+
+    return () => {
+      stopped = true
+      if (timer) clearTimeout(timer)
+    }
+  }, [yomaQrTransaction?.orderId, navigate])
 
   // Polling order status for Wallet Orders
   useEffect(() => {
@@ -307,7 +356,7 @@ export default function GameProduct() {
       try {
         const redirectUrl = `${window.location.origin}/order-status#returnGameId=${encodeURIComponent(gameId)}`
         const orderRes = await createGatewayOrder(selectedPack._id, playerId, server, 1, selectedGateway, redirectUrl)
-        if (orderRes.success && orderRes.transaction?.paymentUrl) {
+        if (orderRes.success && orderRes.transaction) {
           const createdOrderId =
             orderRes?.orderId ||
             orderRes?.order?._id ||
@@ -321,7 +370,21 @@ export default function GameProduct() {
           if (gameId && createdOrderId) {
             localStorage.setItem(`orderGameMap:${createdOrderId}`, gameId)
           }
-          window.location.href = orderRes.transaction.paymentUrl
+
+          if (orderRes.transaction.paymentUrl) {
+            window.location.href = orderRes.transaction.paymentUrl
+          } else if (orderRes.transaction.qrString) {
+            setCheckoutSheetOpen(false)
+            setYomaQrTransaction(orderRes.transaction)
+            setYomaPaymentStatus('pending')
+          } else {
+             Swal.fire({
+               icon: 'error',
+               title: 'Payment Failed',
+               text: 'Failed to initialize payment.',
+               confirmButtonColor: '#e74c3c'
+             })
+          }
         } else {
           Swal.fire({
             icon: 'error',
@@ -1210,6 +1273,59 @@ export default function GameProduct() {
             onClick={() => setSuccessOrderData(null)}
           >
             Continue Shopping
+          </button>
+        </Modal.Body>
+      </Modal>
+
+      {/* YomaBank MMQR Modal */}
+      <Modal centered show={!!yomaQrTransaction} onHide={() => setYomaQrTransaction(null)} backdrop="static" keyboard={false} contentClassName='home-app-page'>
+        <Modal.Header className='border-0 pb-0'>
+          <Modal.Title style={{ fontSize: '20px', color: '#fff', fontWeight: 700, letterSpacing: '0.5px' }}>
+            Yoma Bank MMQR
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className='p-md-4 p-3 pt-3 text-center'>
+          {yomaQrTransaction?.qrString && (
+            <>
+              <div style={{ background: '#fff', padding: '15px', borderRadius: '12px', display: 'inline-block', marginBottom: '20px' }}>
+                <img
+                  src={yomaQrTransaction.qrString.startsWith('data:') ? yomaQrTransaction.qrString : `data:image/png;base64,${yomaQrTransaction.qrString}`}
+                  alt="Yoma Bank MMQR"
+                  style={{ width: 300, maxWidth: '100%' }}
+                />
+              </div>
+              <h5 style={{ color: '#fff' }}>MMK {yomaQrTransaction.amount}</h5>
+              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '14px', marginBottom: '16px' }}>
+                Please scan the QR code above using your Yoma Bank app to complete the payment.
+              </p>
+
+              {yomaPaymentStatus === 'failed' || yomaPaymentStatus === 'cancelled' ? (
+                <div className='alert alert-danger'>
+                  Payment {yomaPaymentStatus}. Please try again.
+                </div>
+              ) : (
+                <div className='d-flex align-items-center justify-content-center gap-2 mb-3'>
+                  <span className='spinner-border spinner-border-sm' style={{ color: '#ffc107' }} role='status' aria-hidden='true' />
+                  <span style={{ color: '#ffc107' }}>Waiting for payment confirmation...</span>
+                </div>
+              )}
+            </>
+          )}
+
+          <button
+            type="button"
+            className='btn w-100 mt-2'
+            onClick={() => setYomaQrTransaction(null)}
+            style={{
+              background: '#242730',
+              color: 'rgba(255,255,255,0.8)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: '8px',
+              padding: '10px 16px',
+              fontWeight: 500,
+            }}
+          >
+            Cancel Payment
           </button>
         </Modal.Body>
       </Modal>

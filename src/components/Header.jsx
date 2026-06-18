@@ -51,15 +51,15 @@ export default function Header() {
                   </span>
                 </button>
               ) : (
-                <button type='button' onClick={() => navigate(-1)} className='navbar-toggler header-back-btn me-3' aria-label='Go back'>
-                  <svg className='icon'>
+                <button type='button' onClick={() => navigate(-1)} className='navbar-toggler header-back-btn me-3' aria-label='Go back' style={{ color: 'white' }}>
+                  <svg className='icon' style={{ fill: 'white' }}>
                     <use href='#icon_backarrow'></use>
                   </svg>
                 </button>
               )}
 
               <Link to='/' className='navbar-brand me-0 d-flex align-items-center'>
-                <img src={websiteLogo} alt='Logo' style={{ height: '36px', objectFit: 'contain' }} />
+                <img src={websiteLogo} alt='Logo' style={{ height: '27px', objectFit: 'contain' }} />
               </Link>
             </div>
 
@@ -79,16 +79,26 @@ export default function Header() {
                 <>
                   <button type='button' className='btn-coin header-wallet-btn' onClick={() => setModal({ ...modal, addMoney: true })}>
 <svg viewBox="0 0 24 24" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="#FFFFFF"></circle><text x="12" y="16.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#E7121B" font-family="sans-serif">₮</text></svg>                    <span className='fw mx-2 fs-6'>{Number(profileData.walletBalance ?? profileData.wallet ?? 0).toFixed(2)}</span>
-                    <img src='/images/rounded-plus.svg' alt='plus' style={{ height: '22px' }} />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/>
+                    </svg>
                   </button>
 
                   <button
                     type='button'
                     onClick={() => navigate('/profile')}
-                    className='btn header-profile-btn rounded-circle ms-2 ms-md-3 d-flex align-items-center justify-content-center p-0 overflow-hidden'
+                    className='btn header-profile-btn rounded-circle ms-2 ms-md-3 d-flex align-items-center justify-content-center p-0 overflow-hidden text-white'
                     title={profileData?.name || 'Profile'}
+                    style={!profileData?.profilePicture ? { border: '1px solid rgba(255,255,255,0.3)', width: '40px', height: '40px' } : { width: '40px', height: '40px' }}
                   >
-                    <img src={profileData?.profilePicture || '/images/user.svg'} alt='user' style={{ width: profileData?.profilePicture ? '40px' : '20px', height: profileData?.profilePicture ? '40px' : '20px', objectFit: 'cover' }} />
+                    {profileData?.profilePicture ? (
+                      <img src={profileData.profilePicture} alt='user' style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                        <path fillRule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                      </svg>
+                    )}
                   </button>
                 </>
               ) : (
@@ -99,16 +109,6 @@ export default function Header() {
                   Login
                 </Link>
               )}
-
-              <div className='country-box ms-md-4 ms-2 d-none d-lg-block'>
-                <button type='button' className='country-btn d-flex align-items-center' data-bs-toggle='collapse' data-bs-target='#collapseCountryList'>
-                  <img src='/images/india-flag.svg' alt='flag' />
-                  <span className='mx-1 fw-500'>IN</span>
-                  <svg className='icon'>
-                    <use href='#icon_chevrondown'></use>
-                  </svg>
-                </button>
-              </div>
             </div>
           </div>
         </nav>

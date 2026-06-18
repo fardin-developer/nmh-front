@@ -193,6 +193,13 @@ export const getOrderStatus = (orderId) =>
   request(`/order/order-status?orderId=${orderId}`, 'GET', null, true)
 
 /**
+ * Check Yoma Bank MMQR Status
+ * @param {string} orderId
+ */
+export const getYomaBankStatus = (orderId) =>
+  request(`/wallet/yomabank-status/${encodeURIComponent(orderId)}`, 'GET', null, true)
+
+/**
  * Fetch a single transaction record by orderId.
  * Looks up in the user's recent transaction history and returns the matching entry.
  * Used to retrieve UTR / gateway txnId for UPI purchase orders.
